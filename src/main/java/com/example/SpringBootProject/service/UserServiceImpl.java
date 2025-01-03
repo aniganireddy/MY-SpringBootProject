@@ -1,6 +1,7 @@
 package com.example.SpringBootProject.service;
 
 import com.example.SpringBootProject.dto.UserDto;
+import com.example.SpringBootProject.exception.EmailAlreadyExists;
 import com.example.SpringBootProject.exception.ResourceNotFoundException;
 import com.example.SpringBootProject.mapper.UserMapper;
 import com.example.SpringBootProject.model.User;
@@ -27,6 +28,10 @@ public class UserServiceImpl implements UserService {
         // convert UserDto to Mongo entity
         // User use1 = UserMapper.mapToUser(userDto);
         //using model mapper
+        Optional<User>optionalUser= userRepository.findByEmail(userDto.getEmail());
+        if(optionalUser.isPresent()){
+            throw new EmailAlreadyExists("Email already exists for user");
+        }
         User use1 = modelMapper.map(userDto, User.class);
         User savedUser = userRepository.save(use1);
         //convert user Mongo entity to user Dto
